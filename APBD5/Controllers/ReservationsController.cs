@@ -1,5 +1,4 @@
 ﻿using APBD5.DTOs.Reservations;
-using APBD5.Enums;
 using APBD5.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,9 +16,9 @@ public class ReservationsController :  ControllerBase
             OrganizerName = "Nowak",
             Topic = "Interesting topic",
             Date = new DateOnly(2026, 04, 16),
-            StartTime =  new DateTime(2026, 04, 16, 10,  30, 00),
-            EndTime =  new DateTime(2026, 04, 16, 12,  00, 00),
-            Status = Status.Planned
+            StartTime =  new TimeOnly(10,  30, 00),
+            EndTime =  new TimeOnly(12,  00, 00),
+            Status = "planned"
         },
         new Reservation()
         {
@@ -28,9 +27,9 @@ public class ReservationsController :  ControllerBase
             OrganizerName = "Smith",
             Topic = "Other topic",
             Date = new DateOnly(2026, 05, 01),
-            StartTime =  new DateTime(2026, 05, 01, 11,  00, 00),
-            EndTime =  new DateTime(2026, 05, 01, 13,  00, 00),
-            Status = Status.Planned
+            StartTime =  new TimeOnly(11,  00, 00),
+            EndTime =  new TimeOnly(13,  00, 00),
+            Status = "planned"
         },
         new Reservation()
         {
@@ -39,9 +38,9 @@ public class ReservationsController :  ControllerBase
             OrganizerName = "Pjatkowski",
             Topic = "Definitely something",
             Date = new DateOnly(2026, 03, 20),
-            StartTime =  new DateTime(2026, 03, 20, 16,  00, 00),
-            EndTime =  new DateTime(2026, 03, 20, 16,  30, 00),
-            Status = Status.Confirmed
+            StartTime =  new TimeOnly(16,  00, 00),
+            EndTime =  new TimeOnly(16,  30, 00),
+            Status = "confirmed"
         },
         new Reservation()
         {
@@ -50,9 +49,9 @@ public class ReservationsController :  ControllerBase
             OrganizerName = "Nowak",
             Topic = "Another interesting topic",
             Date = new DateOnly(2026, 04, 23),
-            StartTime =  new DateTime(2026, 04, 23, 10,  30, 00),
-            EndTime =  new DateTime(2026, 04, 23, 12,  00, 00),
-            Status = Status.Planned
+            StartTime =  new TimeOnly(10,  30, 00),
+            EndTime =  new TimeOnly(12,  00, 00),
+            Status = "planned"
         },
         new Reservation()
         {
@@ -61,9 +60,9 @@ public class ReservationsController :  ControllerBase
             OrganizerName = "Pjatkowski",
             Topic = "Not interesting enough topic",
             Date = new DateOnly(2025, 12, 06),
-            StartTime =  new DateTime(2025, 12, 06, 18,  30, 00),
-            EndTime =  new DateTime(2026, 12, 06, 20,  00, 00),
-            Status = Status.Cancelled
+            StartTime =  new TimeOnly(18,  30, 00),
+            EndTime =  new TimeOnly(20,  00, 00),
+            Status = "cancelled"
         },
         new Reservation()
         {
@@ -72,9 +71,9 @@ public class ReservationsController :  ControllerBase
             OrganizerName = "Nowak",
             Topic = "Yet another interesting topic",
             Date = new DateOnly(2026, 06, 18),
-            StartTime =  new DateTime(2026, 06, 18, 12,  15, 00),
-            EndTime =  new DateTime(2026, 06, 18, 16,  45, 00),
-            Status = Status.Confirmed
+            StartTime =  new TimeOnly(12,  15, 00),
+            EndTime =  new TimeOnly(16,  45, 00),
+            Status = "confirmed"
         },
     ];
     
@@ -121,6 +120,19 @@ public class ReservationsController :  ControllerBase
     public IActionResult Post([FromBody] CreateReservationDto reservationDto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        if (!RoomsController._rooms.Exists(r => r.Id == reservationDto.RoomId)) return BadRequest("There is no room with id: " + reservationDto.RoomId);
+        
+        if (!RoomsController._rooms.First(r => r.Id == reservationDto.RoomId).IsActive) return BadRequest($"Room with id: {reservationDto.RoomId} is not active.");
+        
+        if (_reservations.Exists(r => 
+                r.RoomId == reservationDto.RoomId && 
+                r.Date == reservationDto.Date &&
+                ((r.StartTime <= reservationDto.StartTime && 
+                 reservationDto.StartTime <= r.EndTime) ||
+                (r.StartTime <= reservationDto.EndTime && 
+                 reservationDto.EndTime <= r.EndTime)))
+            ) return BadRequest($"Room with id: {reservationDto.RoomId} is already booked at that time.");
         
         var reservation = new Reservation()
         {

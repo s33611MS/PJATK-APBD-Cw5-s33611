@@ -1,5 +1,4 @@
-﻿using APBD5.Enums;
-using APBD5.Models;
+﻿using APBD5.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APBD5.Controllers;
@@ -8,7 +7,7 @@ namespace APBD5.Controllers;
 [Route("api/[controller]")]
 public class RoomsController
 {
-    private static List<Room> _rooms = [
+    public static List<Room> _rooms = [
         new Room()
         {
             Id = 1,

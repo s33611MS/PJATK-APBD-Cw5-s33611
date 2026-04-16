@@ -1,6 +1,4 @@
-﻿using APBD5.Enums;
-
-namespace APBD5.DTOs.Reservations;
+﻿namespace APBD5.DTOs.Reservations;
 
 public class ReservationDto
 {
@@ -9,7 +7,7 @@ public class ReservationDto
     public string OrganizerName { get; set; } = string.Empty;
     public string Topic { get; set; }  = string.Empty;
     public DateOnly Date { get; set; }
-    public DateTime StartTime { get; set; }
-    public DateTime EndTime { get; set; }
-    public Status Status { get; set; }
+    public TimeOnly StartTime { get; set; }
+    public TimeOnly EndTime { get; set; }
+    public string Status { get; set; } = string.Empty;
 }

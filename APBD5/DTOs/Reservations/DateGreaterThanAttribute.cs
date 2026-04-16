@@ -3,22 +3,22 @@
 namespace APBD5.DTOs.Reservations;
 
 [AttributeUsage(AttributeTargets.Property)]
-public class DateGreaterThanAttribute : ValidationAttribute
+public class TimeGreaterThanAttribute : ValidationAttribute
 {
-    private string DateToCompare { get; set; }
+    private string TimeToCompare { get; set; }
     
-    public DateGreaterThanAttribute(string dateToCompare)
+    public TimeGreaterThanAttribute(string timeToCompare)
     {
-        DateToCompare = dateToCompare;
+        TimeToCompare = timeToCompare;
     }
 
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
-        DateTime earlierDate = (DateTime)validationContext.ObjectType.GetProperty(DateToCompare).GetValue(validationContext.ObjectInstance);
+        TimeOnly earlierTime = (TimeOnly)validationContext.ObjectType.GetProperty(TimeToCompare).GetValue(validationContext.ObjectInstance);
 
-        DateTime laterDate = (DateTime)value;
+        TimeOnly laterTime = (TimeOnly)value;
 
-        if (laterDate > earlierDate)
+        if (laterTime > earlierTime)
         {
             return ValidationResult.Success;
         }
