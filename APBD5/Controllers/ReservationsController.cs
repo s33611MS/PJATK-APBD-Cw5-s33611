@@ -77,21 +77,21 @@ public class ReservationsController :  ControllerBase
         },
     ];
     
-    [HttpGet]
-    public IActionResult GetAll()
-    {
-        return Ok(_reservations.Select(r => new ReservationDto
-        {
-            Id = r.Id,
-            RoomId = r.RoomId,
-            OrganizerName = r.OrganizerName,
-            Topic = r.Topic,
-            Date = r.Date,
-            StartTime = r.StartTime,
-            EndTime = r.EndTime,
-            Status = r.Status
-        }));
-    }
+    // [HttpGet]
+    // public IActionResult GetAll()
+    // {
+    //     return Ok(_reservations.Select(r => new ReservationDto
+    //     {
+    //         Id = r.Id,
+    //         RoomId = r.RoomId,
+    //         OrganizerName = r.OrganizerName,
+    //         Topic = r.Topic,
+    //         Date = r.Date,
+    //         StartTime = r.StartTime,
+    //         EndTime = r.EndTime,
+    //         Status = r.Status
+    //     }));
+    // }
     
     [HttpGet("{id:int}")]
     public IActionResult GetById(int id)
@@ -114,6 +114,33 @@ public class ReservationsController :  ControllerBase
             EndTime = reservation.EndTime,
             Status = reservation.Status
         });
+    }
+    
+    [HttpGet]
+    public IActionResult Get([FromQuery] FilterReservationDto filter)
+    {
+        var result = _reservations
+            .Where(r => 
+                (!filter.RoomId.HasValue || r.RoomId == filter.RoomId) &&
+                (filter.OrganizerName == null || r.OrganizerName == filter.OrganizerName) && 
+                (filter.Topic == null || r.Topic == filter.Topic) && 
+                (!filter.Date.HasValue || r.Date == filter.Date) && 
+                (!filter.StartTime.HasValue || r.StartTime == filter.StartTime) && 
+                (!filter.EndTime.HasValue || r.EndTime == filter.EndTime) && 
+                (filter.Status == null || r.Status == filter.Status))
+            .Select(r => new ReservationDto
+            {
+                Id = r.Id,
+                RoomId = r.RoomId,
+                OrganizerName = r.OrganizerName,
+                Topic = r.Topic,
+                Date = r.Date,
+                StartTime = r.StartTime,
+                EndTime = r.EndTime,
+                Status = r.Status
+            });
+
+        return Ok(result);
     }
     
     [HttpPost]
