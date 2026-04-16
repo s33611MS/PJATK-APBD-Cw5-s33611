@@ -119,4 +119,26 @@ public class RoomsController : ControllerBase
             IsActive = room.IsActive
         });
     }
+    
+    [HttpPost]
+    public IActionResult Post([FromBody] CreateRoomDto roomDto)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        
+        var room = new Room
+        {
+            Id = _rooms.Max(e => e.Id) + 1,
+            Name = roomDto.Name,
+            BuildingCode = roomDto.BuildingCode,
+            Floor = roomDto.Floor,
+            Capacity = roomDto.Capacity,
+            HasProjector = roomDto.HasProjector,
+            IsActive = roomDto.IsActive
+        };
+
+        _rooms.Add(room);
+
+        return CreatedAtAction(nameof(GetById), new { id = room.Id }, room);
+
+    }
 }
