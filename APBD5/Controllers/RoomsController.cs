@@ -97,4 +97,26 @@ public class RoomsController : ControllerBase
             IsActive = room.IsActive
         });
     }
+    
+    [HttpGet("building/{buildingCode:int}")]
+    public IActionResult GetByBuilding(int buildingCode)
+    {
+        var room = _rooms.FirstOrDefault(r => r.BuildingCode == buildingCode);
+        
+        if (room is null)
+        {
+            return NotFound($"Room with building code: {buildingCode} not found.");
+        }
+        
+        return Ok(new RoomDto
+        {
+            Id = room.Id,
+            Name = room.Name,
+            BuildingCode = room.BuildingCode,
+            Floor = room.Floor,
+            Capacity = room.Capacity,
+            HasProjector = room.HasProjector,
+            IsActive = room.IsActive
+        });
+    }
 }
