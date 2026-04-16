@@ -14,5 +14,6 @@ public class UpdateReservationDto
     public DateTime StartTime { get; set; }
     [DateGreaterThan("StartTime")]
     public DateTime EndTime { get; set; }
+    [EnumDataType(typeof(Status))]
     public Status Status { get; set; }
 }

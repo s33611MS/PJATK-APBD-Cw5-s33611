@@ -116,4 +116,26 @@ public class ReservationsController :  ControllerBase
             Status = reservation.Status
         });
     }
+    
+    [HttpPost]
+    public IActionResult Post([FromBody] CreateReservationDto reservationDto)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        
+        var reservation = new Reservation()
+        {
+            Id = _reservations.Max(e => e.Id) + 1,
+            RoomId = reservationDto.RoomId,
+            OrganizerName = reservationDto.OrganizerName,
+            Topic = reservationDto.Topic,
+            Date = reservationDto.Date,
+            StartTime = reservationDto.StartTime,
+            EndTime = reservationDto.EndTime,
+            Status = reservationDto.Status
+        };
+
+        _reservations.Add(reservation);
+
+        return CreatedAtAction(nameof(GetById), new { id = reservation.Id }, reservation);
+    }
 }

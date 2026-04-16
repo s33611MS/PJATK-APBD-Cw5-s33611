@@ -14,9 +14,9 @@ public class DateGreaterThanAttribute : ValidationAttribute
 
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
-        DateTime earlierDate = (DateTime)value;
+        DateTime earlierDate = (DateTime)validationContext.ObjectType.GetProperty(DateToCompare).GetValue(validationContext.ObjectInstance);
 
-        DateTime laterDate = (DateTime)validationContext.ObjectType.GetProperty(DateToCompare).GetValue(validationContext.ObjectInstance);
+        DateTime laterDate = (DateTime)value;
 
         if (laterDate > earlierDate)
         {
