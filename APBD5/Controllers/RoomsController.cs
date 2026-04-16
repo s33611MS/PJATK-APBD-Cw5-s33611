@@ -61,20 +61,20 @@ public class RoomsController : ControllerBase
         },
     ];
     
-    [HttpGet]
-    public IActionResult GetAll()
-    {
-        return Ok(_rooms.Select(r => new RoomDto
-        {
-            Id = r.Id,
-            Name = r.Name,
-            BuildingCode = r.BuildingCode,
-            Floor = r.Floor,
-            Capacity = r.Capacity,
-            HasProjector = r.HasProjector,
-            IsActive = r.IsActive
-        }));
-    }
+    // [HttpGet]
+    // public IActionResult GetAll()
+    // {
+    //     return Ok(_rooms.Select(r => new RoomDto
+    //     {
+    //         Id = r.Id,
+    //         Name = r.Name,
+    //         BuildingCode = r.BuildingCode,
+    //         Floor = r.Floor,
+    //         Capacity = r.Capacity,
+    //         HasProjector = r.HasProjector,
+    //         IsActive = r.IsActive
+    //     }));
+    // }
     
     [HttpGet("{id:int}")]
     public IActionResult GetById(int id)
@@ -96,6 +96,31 @@ public class RoomsController : ControllerBase
             HasProjector = room.HasProjector,
             IsActive = room.IsActive
         });
+    }
+    
+    [HttpGet]
+    public IActionResult Get([FromQuery] FilterRoomDto filter)
+    {
+        var result = _rooms
+            .Where(r => 
+                (filter.Name == null || r.Name == filter.Name) && 
+                (!filter.BuildingCode.HasValue || r.BuildingCode == filter.BuildingCode) && 
+                (!filter.Floor.HasValue || r.Floor == filter.Floor) && 
+                (!filter.minCapacity.HasValue || r.Capacity >= filter.minCapacity) && 
+                (!filter.HasProjector.HasValue || r.HasProjector == filter.HasProjector) && 
+                (!filter.ActiveOnly.HasValue || filter.ActiveOnly == false || (filter.ActiveOnly == true && r.IsActive)))
+            .Select(r => new RoomDto
+            {
+                Id = r.Id,
+                Name = r.Name,
+                BuildingCode = r.BuildingCode,
+                Floor = r.Floor,
+                Capacity = r.Capacity,
+                HasProjector = r.HasProjector,
+                IsActive = r.IsActive
+            });
+
+        return Ok(result);
     }
     
     [HttpGet("building/{buildingCode:int}")]
