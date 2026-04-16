@@ -8,7 +8,7 @@ namespace APBD5.Controllers;
 [Route("api/[controller]")]
 public class ReservationsController
 {
-    private static List<Reservation> _reservations = [
+    public static List<Reservation> _reservations = [
         new Reservation()
         {
             Id = 1,

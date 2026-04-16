@@ -191,6 +191,8 @@ public class RoomsController : ControllerBase
     {
         var room = _rooms.FirstOrDefault(r => r.Id == id);
         
+        if (ReservationsController._reservations.Exists(r => r.RoomId == id && r.Date >= DateOnly.FromDateTime(DateTime.Now))) return Conflict($"Room with id: {id} is booked in the future.");
+        
         if (room is null)
         {
             return NotFound($"Room with id: {id} not found.");
