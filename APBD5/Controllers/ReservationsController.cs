@@ -1,4 +1,5 @@
-﻿using APBD5.Enums;
+﻿using APBD5.DTOs.Reservations;
+using APBD5.Enums;
 using APBD5.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,7 +7,7 @@ namespace APBD5.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReservationsController
+public class ReservationsController :  ControllerBase
 {
     private static List<Reservation> _reservations = [
         new Reservation()
@@ -76,4 +77,20 @@ public class ReservationsController
             Status = Status.Confirmed
         },
     ];
+    
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        return Ok(_reservations.Select(r => new ReservationDto
+        {
+            Id = r.Id,
+            RoomId = r.RoomId,
+            OrganizerName = r.OrganizerName,
+            Topic = r.Topic,
+            Date = r.Date,
+            StartTime = r.StartTime,
+            EndTime = r.EndTime,
+            Status = r.Status
+        }));
+    }
 }
