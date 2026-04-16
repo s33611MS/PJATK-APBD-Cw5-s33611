@@ -138,4 +138,25 @@ public class ReservationsController :  ControllerBase
 
         return CreatedAtAction(nameof(GetById), new { id = reservation.Id }, reservation);
     }
+    
+    [HttpPut("{id:int}")]
+    public IActionResult Update(int id, [FromBody] UpdateReservationDto reservationDto)
+    {
+        var reservation = _reservations.FirstOrDefault(r => r.Id == id);
+        
+        if (reservation is null)
+        {
+            return NotFound();
+        }
+
+        reservation.RoomId = reservationDto.RoomId;
+        reservation.OrganizerName = reservationDto.OrganizerName;
+        reservation.Topic = reservationDto.Topic;
+        reservation.Date = reservationDto.Date;
+        reservation.StartTime = reservationDto.StartTime;
+        reservation.EndTime = reservationDto.EndTime;
+        reservation.Status = reservationDto.Status;
+        
+        return Ok();
+    }
 }
