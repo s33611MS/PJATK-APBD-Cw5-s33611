@@ -75,4 +75,26 @@ public class RoomsController : ControllerBase
             IsActive = r.IsActive
         }));
     }
+    
+    [HttpGet("{id:int}")]
+    public IActionResult GetById(int id)
+    {
+        var room = _rooms.FirstOrDefault(r => r.Id == id);
+        
+        if (room is null)
+        {
+            return NotFound($"Room with id: {id} not found.");
+        }
+        
+        return Ok(new RoomDto
+        {
+            Id = room.Id,
+            Name = room.Name,
+            BuildingCode = room.BuildingCode,
+            Floor = room.Floor,
+            Capacity = room.Capacity,
+            HasProjector = room.HasProjector,
+            IsActive = room.IsActive
+        });
+    }
 }
