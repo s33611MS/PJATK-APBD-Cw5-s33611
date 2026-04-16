@@ -160,4 +160,18 @@ public class RoomsController : ControllerBase
         
         return Ok();
     }
+    
+    [HttpDelete("{id:int}")]
+    public IActionResult Delete(int id)
+    {
+        var room = _rooms.FirstOrDefault(r => r.Id == id);
+        
+        if (room is null)
+        {
+            return NotFound($"Room with id: {id} not found.");
+        }
+        
+        _rooms.Remove(room);
+        return NoContent();
+    }
 }
