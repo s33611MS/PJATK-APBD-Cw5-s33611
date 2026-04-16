@@ -9,7 +9,7 @@ namespace APBD5.Controllers;
 public class ReservationsController :  ControllerBase
 {
     public static List<Reservation> _reservations = [
-        new Reservation()
+        new()
         {
             Id = 1,
             RoomId = 1,
@@ -20,7 +20,7 @@ public class ReservationsController :  ControllerBase
             EndTime =  new TimeOnly(12,  00, 00),
             Status = "planned"
         },
-        new Reservation()
+        new()
         {
             Id = 2,
             RoomId = 5,
@@ -31,7 +31,7 @@ public class ReservationsController :  ControllerBase
             EndTime =  new TimeOnly(13,  00, 00),
             Status = "planned"
         },
-        new Reservation()
+        new()
         {
             Id = 3,
             RoomId = 3,
@@ -42,7 +42,7 @@ public class ReservationsController :  ControllerBase
             EndTime =  new TimeOnly(16,  30, 00),
             Status = "confirmed"
         },
-        new Reservation()
+        new()
         {
             Id = 4,
             RoomId = 3,
@@ -53,7 +53,7 @@ public class ReservationsController :  ControllerBase
             EndTime =  new TimeOnly(12,  00, 00),
             Status = "planned"
         },
-        new Reservation()
+        new()
         {
             Id = 5,
             RoomId = 2,
@@ -64,7 +64,7 @@ public class ReservationsController :  ControllerBase
             EndTime =  new TimeOnly(20,  00, 00),
             Status = "cancelled"
         },
-        new Reservation()
+        new()
         {
             Id = 6,
             RoomId = 4,
@@ -158,8 +158,10 @@ public class ReservationsController :  ControllerBase
                 ((r.StartTime <= reservationDto.StartTime && 
                  reservationDto.StartTime <= r.EndTime) ||
                 (r.StartTime <= reservationDto.EndTime && 
-                 reservationDto.EndTime <= r.EndTime)))
-            ) return BadRequest($"Room with id: {reservationDto.RoomId} is already booked at that time.");
+                 reservationDto.EndTime <= r.EndTime) ||
+                (r.StartTime >= reservationDto.StartTime && 
+                 reservationDto.EndTime >= r.EndTime)))
+            ) return Conflict($"Room with id: {reservationDto.RoomId} is already booked at that time.");
         
         var reservation = new Reservation()
         {
@@ -185,7 +187,7 @@ public class ReservationsController :  ControllerBase
         
         if (reservation is null)
         {
-            return NotFound();
+            return NotFound($"Reservation with id: {id} not found.");
         }
 
         reservation.RoomId = reservationDto.RoomId;

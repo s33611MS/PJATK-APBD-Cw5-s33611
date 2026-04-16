@@ -8,8 +8,8 @@ namespace APBD5.Controllers;
 [Route("api/[controller]")]
 public class RoomsController : ControllerBase
 {
-    private static List<Room> _rooms = [
-        new Room()
+    public static List<Room> _rooms = [
+        new()
         {
             Id = 1,
             Name = "Room 1",
@@ -19,7 +19,7 @@ public class RoomsController : ControllerBase
             HasProjector =  false,
             IsActive = true
         },
-        new Room()
+        new()
         {
             Id = 2,
             Name = "Room 2",
@@ -29,7 +29,7 @@ public class RoomsController : ControllerBase
             HasProjector =  false,
             IsActive = false
         },
-        new Room()
+        new()
         {
             Id = 3,
             Name = "Room 3",
@@ -39,7 +39,7 @@ public class RoomsController : ControllerBase
             HasProjector =  true,
             IsActive = true
         },
-        new Room()
+        new()
         {
             Id = 4,
             Name = "Room 4",
@@ -49,7 +49,7 @@ public class RoomsController : ControllerBase
             HasProjector =  true,
             IsActive = false
         },
-        new Room()
+        new()
         {
             Id = 5,
             Name = "Room 5",
@@ -173,7 +173,7 @@ public class RoomsController : ControllerBase
         
         if (room is null)
         {
-            return NotFound();
+            return NotFound($"Room with id: {id} not found.");
         }
 
         room.Name = roomDto.Name;
