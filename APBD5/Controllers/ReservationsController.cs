@@ -93,4 +93,27 @@ public class ReservationsController :  ControllerBase
             Status = r.Status
         }));
     }
+    
+    [HttpGet("{id:int}")]
+    public IActionResult GetById(int id)
+    {
+        var reservation = _reservations.FirstOrDefault(r => r.Id == id);
+        
+        if (reservation is null)
+        {
+            return NotFound($"Reservation with id: {id} not found.");
+        }
+        
+        return Ok(new ReservationDto
+        {
+            Id = reservation.Id,
+            RoomId = reservation.RoomId,
+            OrganizerName = reservation.OrganizerName,
+            Topic = reservation.Topic,
+            Date = reservation.Date,
+            StartTime = reservation.StartTime,
+            EndTime = reservation.EndTime,
+            Status = reservation.Status
+        });
+    }
 }
