@@ -1,11 +1,15 @@
-﻿namespace APBD5.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class RoomDto
+namespace APBD5.DTOs.Rooms;
+
+public class CreateRoomDto
 {
-    public int Id { get; set; }
+    [Required]
     public string Name { get; set; } = string.Empty;
+    [Required]
     public int BuildingCode { get; set; }
     public int Floor { get; set; }
+    [Range(1, int.MaxValue)]
     public int Capacity { get; set; }
     public bool HasProjector { get; set; }
     public bool IsActive { get; set; }

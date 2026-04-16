@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using APBD5.DTOs;
+using APBD5.DTOs.Rooms;
 using APBD5.Models;
 
 namespace APBD5.Controllers;
@@ -139,6 +139,25 @@ public class RoomsController : ControllerBase
         _rooms.Add(room);
 
         return CreatedAtAction(nameof(GetById), new { id = room.Id }, room);
+    }
+    
+    [HttpPut("{id:int}")]
+    public IActionResult Update(int id, [FromBody] UpdateRoomDto roomDto)
+    {
+        var room = _rooms.FirstOrDefault(r => r.Id == id);
+        
+        if (room is null)
+        {
+            return NotFound();
+        }
 
+        room.Name = roomDto.Name;
+        room.BuildingCode = roomDto.BuildingCode;
+        room.Floor = roomDto.Floor;
+        room.Capacity = roomDto.Capacity;
+        room.HasProjector = roomDto.HasProjector;
+        room.IsActive = roomDto.IsActive;
+        
+        return Ok();
     }
 }
