@@ -1,8 +1,8 @@
 ﻿using APBD5.Enums;
 
-namespace APBD5.Models;
+namespace APBD5.DTOs.Reservations;
 
-public class Reservation
+public class ReservationDto
 {
     public int Id { get; set; }
     public int RoomId { get; set; }
