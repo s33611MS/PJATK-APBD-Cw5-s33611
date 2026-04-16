@@ -1,13 +1,14 @@
-﻿using APBD5.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using APBD5.DTOs.Rooms;
+using APBD5.Models;
 
 namespace APBD5.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RoomsController
+public class RoomsController : ControllerBase
 {
-    public static List<Room> _rooms = [
+    private static List<Room> _rooms = [
         new Room()
         {
             Id = 1,
@@ -59,4 +60,145 @@ public class RoomsController
             IsActive = true
         },
     ];
+    
+    // [HttpGet]
+    // public IActionResult GetAll()
+    // {
+    //     return Ok(_rooms.Select(r => new RoomDto
+    //     {
+    //         Id = r.Id,
+    //         Name = r.Name,
+    //         BuildingCode = r.BuildingCode,
+    //         Floor = r.Floor,
+    //         Capacity = r.Capacity,
+    //         HasProjector = r.HasProjector,
+    //         IsActive = r.IsActive
+    //     }));
+    // }
+    
+    [HttpGet("{id:int}")]
+    public IActionResult GetById(int id)
+    {
+        var room = _rooms.FirstOrDefault(r => r.Id == id);
+        
+        if (room is null)
+        {
+            return NotFound($"Room with id: {id} not found.");
+        }
+        
+        return Ok(new RoomDto
+        {
+            Id = room.Id,
+            Name = room.Name,
+            BuildingCode = room.BuildingCode,
+            Floor = room.Floor,
+            Capacity = room.Capacity,
+            HasProjector = room.HasProjector,
+            IsActive = room.IsActive
+        });
+    }
+    
+    [HttpGet]
+    public IActionResult Get([FromQuery] FilterRoomDto filter)
+    {
+        var result = _rooms
+            .Where(r => 
+                (filter.Name == null || r.Name == filter.Name) && 
+                (!filter.BuildingCode.HasValue || r.BuildingCode == filter.BuildingCode) && 
+                (!filter.Floor.HasValue || r.Floor == filter.Floor) && 
+                (!filter.minCapacity.HasValue || r.Capacity >= filter.minCapacity) && 
+                (!filter.HasProjector.HasValue || r.HasProjector == filter.HasProjector) && 
+                (!filter.ActiveOnly.HasValue || filter.ActiveOnly == false || (filter.ActiveOnly == true && r.IsActive)))
+            .Select(r => new RoomDto
+            {
+                Id = r.Id,
+                Name = r.Name,
+                BuildingCode = r.BuildingCode,
+                Floor = r.Floor,
+                Capacity = r.Capacity,
+                HasProjector = r.HasProjector,
+                IsActive = r.IsActive
+            });
+
+        return Ok(result);
+    }
+    
+    [HttpGet("building/{buildingCode:int}")]
+    public IActionResult GetByBuilding(int buildingCode)
+    {
+        var room = _rooms.FirstOrDefault(r => r.BuildingCode == buildingCode);
+        
+        if (room is null)
+        {
+            return NotFound($"Room with building code: {buildingCode} not found.");
+        }
+        
+        return Ok(new RoomDto
+        {
+            Id = room.Id,
+            Name = room.Name,
+            BuildingCode = room.BuildingCode,
+            Floor = room.Floor,
+            Capacity = room.Capacity,
+            HasProjector = room.HasProjector,
+            IsActive = room.IsActive
+        });
+    }
+    
+    [HttpPost]
+    public IActionResult Post([FromBody] CreateRoomDto roomDto)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        
+        var room = new Room
+        {
+            Id = _rooms.Max(e => e.Id) + 1,
+            Name = roomDto.Name,
+            BuildingCode = roomDto.BuildingCode,
+            Floor = roomDto.Floor,
+            Capacity = roomDto.Capacity,
+            HasProjector = roomDto.HasProjector,
+            IsActive = roomDto.IsActive
+        };
+
+        _rooms.Add(room);
+
+        return CreatedAtAction(nameof(GetById), new { id = room.Id }, room);
+    }
+    
+    [HttpPut("{id:int}")]
+    public IActionResult Update(int id, [FromBody] UpdateRoomDto roomDto)
+    {
+        var room = _rooms.FirstOrDefault(r => r.Id == id);
+        
+        if (room is null)
+        {
+            return NotFound();
+        }
+
+        room.Name = roomDto.Name;
+        room.BuildingCode = roomDto.BuildingCode;
+        room.Floor = roomDto.Floor;
+        room.Capacity = roomDto.Capacity;
+        room.HasProjector = roomDto.HasProjector;
+        room.IsActive = roomDto.IsActive;
+        
+        return Ok();
+    }
+    
+    [HttpDelete("{id:int}")]
+    public IActionResult Delete(int id)
+    {
+        var room = _rooms.FirstOrDefault(r => r.Id == id);
+        
+        if (ReservationsController._reservations.Exists(r => r.RoomId == id && r.Date >= DateOnly.FromDateTime(DateTime.Now))) return Conflict($"Room with id: {id} is booked in the future.");
+        
+        if (room is null)
+        {
+            return NotFound($"Room with id: {id} not found.");
+        }
+        
+        _rooms.Remove(room);
+        return NoContent();
+    }
 }
