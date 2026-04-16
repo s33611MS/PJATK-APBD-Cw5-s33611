@@ -1,12 +1,12 @@
-﻿using APBD5.Enums;
+﻿using Microsoft.AspNetCore.Mvc;
+using APBD5.DTOs;
 using APBD5.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace APBD5.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RoomsController
+public class RoomsController : ControllerBase
 {
     private static List<Room> _rooms = [
         new Room()
@@ -60,4 +60,19 @@ public class RoomsController
             IsActive = true
         },
     ];
+    
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        return Ok(_rooms.Select(r => new RoomDto
+        {
+            Id = r.Id,
+            Name = r.Name,
+            BuildingCode = r.BuildingCode,
+            Floor = r.Floor,
+            Capacity = r.Capacity,
+            HasProjector = r.HasProjector,
+            IsActive = r.IsActive
+        }));
+    }
 }
